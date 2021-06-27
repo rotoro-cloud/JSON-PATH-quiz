@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">-->
+    <link rel="stylesheet" href="static/libs/normalize.min.css" />
+    <link rel="stylesheet" href="static/libs/materialize.min.css">
+    <link rel="stylesheet" href="static/libs/animate.min.css">
+
+    <link rel="stylesheet" type="text/css" href="static/css/app.css" />
+</head>
+<body>
+    <!-- content -->
+
+    <div style="margin: 10px;">
+      <!-- Content here -->
+    <div ng-app="myApp" ng-controller="myCtrl">
+     <div class="row">
+        <div class="col s7">
+
+          <div class="animated card {{ question_state }}" ng-if="finished">
+              <div class="card-content white-text" role="alert">
+                  <h4> ПОЗДРАВЛЕНИЯ!!  <h4>
+                  <h5>Вы успешно выполнили это упражнение.</h5>
+              </div>
+            </div>
+
+            <div class="animated card {{ question_state }}" ng-if="!finished">
+                <div class="card-content white-text" role="alert">
+                    <div class="card-title"> {{ current_question_number + 1 }} / {{ total_questions }} {{ current_question.title }}
+                      <button ng-if="!correct_answer" ng-class="{disabled: lastQuestion}"  ng-click="nextQuestion()" type="button" class="waves-effect waves-light btn-floating right"> > </button>
+                      <button ng-if="!correct_answer" ng-class="{disabled: current_question_number < 1}" ng-click="previousQuestion()" type="button" class="waves-effect waves-light btn-floating right"> < </button>
+                    </div>
+
+                    <p ng-bind-html="current_question_text"></p>
+                    <p ng-bind-html="current_question_subText"></p>
+
+                    <div ng-if="current_question_type == 'multiple_choice'">
+                      <button ng-repeat="option in current_question.options" ng-click="checkAnswer(option)" type="button" class="animated zoomIn waves-effect waves-light btn delay-{{ $index }}00ms" style="margin: 10px;"> {{ option }} </button>
+
+                      <div class="animated card pink darken-1 white-text" ng-show="show_hint && current_question.question">
+                          <div class="card-content">
+                           <b>Подсказка:</b>
+
+                          <p ng-bind-html="current_question_hint"></p>
+
+                          </div>
+                      </div>
+
+                    </div>
+
+                    <div class="card-action" style="min-height: 69px;">
+                      <button ng-if="correct_answer" ng-click="nextQuestion()" type="button" class="animated zoomIn waves-effect waves-light btn right"> Верно! Следующий > </button>
+                      <button ng-if="!correct_answer" ng-click="showSolution()" class="waves-effect waves-light btn right"><span ng-if="!showSolutionFlag">Показать решение</span> <span ng-if="showSolutionFlag">Убрать решение</span></button>
+                    </div>
+                </div>
+            </div>
+
+                <div ng-show="current_question_type != 'multiple_choice'">
+                    Твой ответ:
+                    <div id="editor">
+                    </div>
+                </div>
+
+
+
+                <p ng-show="showSolutionFlag">Решение: </p>
+                <div ng-show="showSolutionFlag" id="solutionEditor">
+                </div>
+
+        </div>
+
+        <div class="col s5" ng-show="current_question_type != 'multiple_choice'">
+
+            <p>Вывод, основанный на твоем JSON-Path запросе:</p>
+            <div id="sampleViewerEditor">
+            </div>
+
+        </div>
+
+      </div>
+
+
+        <div class="row">
+
+        </div>
+
+        <div class="row">
+
+          <div class="col s7">
+            <h5>Source Data: </h5>
+            <div id="sourceDataEditor">
+          - apple
+          - apple
+          - mango
+            </div>
+          </div>
+
+          <div class="col s5" ng-show="current_question_type != 'multiple_choice'">
+            <h5>Ожидеаемый вывод: </h5>
+            <div id="outputDataEditor">
+            </div>
+            <!-- <button ng-if="!correct_answer" ng-click="resetAnswer()" type="button" class="waves-effect waves-light btn red">Reset Answer</button> -->
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+    <!-- dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.2/ace.js"></script>	
+	
+    <script src="static/libs/jquery.min.js"></script>
+    <script src="static/libs/materialize.min.js"></script>
+    <script src="static/libs/lodash.min.js"></script>
+    <script src="static/libs/angular.min.js"></script>
+    <script src="static/libs/yaml.min.js"></script>
+    <script src="static/libs/jsonpath-0.8.0.js"></script>
+
+    <!-- questions & code -->
+    <script src="static/questions/questions.js"></script>
+    <script src="static/questions/questions2.js"></script>
+    <script src="static/questions/questions3.js"></script>
+    <script src="static/questions/questions-kube.js"></script>
+    <script src="static/questions/questions-kube2.js"></script>
+    <script src="static/js/ace-editor.js"></script>
+
+    <script>
+      $(document).ready( function () {
+          // I only have one form on the page but you can be more specific if need be.
+          var $form = $('form');
+
+          if ( $form.length > 0 ) {
+              $('#mc-embedded-subscribe').bind('click', function ( event ) {
+                  if ( event ) event.preventDefault();
+                  // validate_input() is a validation function I wrote, you'll have to substitute this with your own.
+                  register($form);
+              });
+          }
+      });
+
+      function register($form) {
+          $("#mc-embedded-subscribe").html('Submitting...')
+          $.ajax({
+              type: $form.attr('method'),
+              url: $form.attr('action'),
+              data: $form.serialize(),
+              cache       : false,
+              dataType    : 'json',
+              contentType: "application/json; charset=utf-8",
+              error       : function(err) { alert("Could not connect to the registration server. Please try again later."); },
+              success     : function(data) {
+                  $('#mailchimp-err-response').html("");
+                  $('#mailchimp-success-response').html("");
+                  if (data.result != "success") {
+                      // Something went wrong, do something to notify the user. maybe alert(data.msg);
+                      console.error(data.msg)
+                      $('#mailchimp-err-response').html(data.msg);
+                      $("#mc-embedded-subscribe").html("Ahh! Try me again!")
+                      $("#mc-embedded-subscribe").css('background-color', '#F44336')
+                  } else {
+                      // It worked, carry on...
+                      console.log(data.msg)
+                      $("#mc-embedded-subscribe").html('DONE!')
+                      $("#mc-embedded-subscribe").css('background-color', '#4caf50')
+                      $('#mailchimp-success-response').html("Thank you! We've got you!");
+                      //$("#proceed-to-training").css('display', 'inline-block')
+                      //$("#twitter-share").css('display', 'inline-block')
+                      //window.location.replace("https://kodekloud.com")
+                  }
+
+              }
+          });
+      }
+  </script>
+
+
+</body>
+</html>
