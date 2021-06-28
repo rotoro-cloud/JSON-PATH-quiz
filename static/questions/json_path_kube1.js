@@ -1,4 +1,4 @@
-var questionskube1 = [
+var json_path_kube1 = [
     {
         "title": "JSON PATH in Kubernetes",
         "question": "Привет и добро пожаловать в упражнение <b>JSON PATH + KUBERNETES</b>. Мы начнем, продвигаясь от заданий на просмотр до составления сложных запросов",
