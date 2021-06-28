@@ -148,7 +148,7 @@ app.controller('myCtrl', ['$scope', '$sce', '$location', '$window', function($sc
     }
 
     /////
-    var questions_file = questions
+    var questions_file = $scope.questions_override
     $scope.feedback_url = $sce.trustAsResourceUrl("https://docs.google.com/forms/d/e/1FAIpQLSe9wIeyh0C4A7qzkvVcJUiCc_XiVpxsd2Tm8cK3-8ZX_R0GcQ/viewform?embedded=true&entry.87961767=" + questions_file);
 
     console.log("FB",$scope.feedback_url);
