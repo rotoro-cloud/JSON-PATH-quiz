@@ -1,4 +1,4 @@
-var questions2 = [
+var json_path2 = [
     {
         "title": "Wildcard - Dictionary",
         "question": "Задай такой запрос JSON-path, чтобы его результат был таким же, как в ожидаемом выводе",
