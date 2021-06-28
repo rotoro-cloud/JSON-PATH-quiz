@@ -1,4 +1,4 @@
-var questions3 = [
+var json_path3 = [
     {
         "title": "Lists",
         "question": "Задай такой запрос JSON-path, чтобы его результат был таким же, как в ожидаемом выводе",
