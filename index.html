@@ -123,63 +123,13 @@
 
     <!-- questions & code -->
     <script src="static/questions/json_path1.js"></script>
+    <script src="static/questions/json_path2.js"></script>
+    <script src="static/questions/json_path3.js"></script>
+    <script src="static/questions/json_path_kube1.js"></script>
+    <script src="static/questions/json_path_kube2.js"></script>
 	     
     <script src="static/questions/questions.js"></script>
-    <script src="static/questions/questions2.js"></script>
-    <script src="static/questions/questions3.js"></script>
-    <script src="static/questions/questions-kube.js"></script>
-    <script src="static/questions/questions-kube2.js"></script>
     <script src="static/js/ace-editor.js"></script>
-
-    <script>
-      $(document).ready( function () {
-          // I only have one form on the page but you can be more specific if need be.
-          var $form = $('form');
-
-          if ( $form.length > 0 ) {
-              $('#mc-embedded-subscribe').bind('click', function ( event ) {
-                  if ( event ) event.preventDefault();
-                  // validate_input() is a validation function I wrote, you'll have to substitute this with your own.
-                  register($form);
-              });
-          }
-      });
-
-      function register($form) {
-          $("#mc-embedded-subscribe").html('Submitting...')
-          $.ajax({
-              type: $form.attr('method'),
-              url: $form.attr('action'),
-              data: $form.serialize(),
-              cache       : false,
-              dataType    : 'json',
-              contentType: "application/json; charset=utf-8",
-              error       : function(err) { alert("Could not connect to the registration server. Please try again later."); },
-              success     : function(data) {
-                  $('#mailchimp-err-response').html("");
-                  $('#mailchimp-success-response').html("");
-                  if (data.result != "success") {
-                      // Something went wrong, do something to notify the user. maybe alert(data.msg);
-                      console.error(data.msg)
-                      $('#mailchimp-err-response').html(data.msg);
-                      $("#mc-embedded-subscribe").html("Ahh! Try me again!")
-                      $("#mc-embedded-subscribe").css('background-color', '#F44336')
-                  } else {
-                      // It worked, carry on...
-                      console.log(data.msg)
-                      $("#mc-embedded-subscribe").html('DONE!')
-                      $("#mc-embedded-subscribe").css('background-color', '#4caf50')
-                      $('#mailchimp-success-response').html("Thank you! We've got you!");
-                      //$("#proceed-to-training").css('display', 'inline-block')
-                      //$("#twitter-share").css('display', 'inline-block')
-                      //window.location.replace("https://kodekloud.com")
-                  }
-
-              }
-          });
-      }
-  </script>
-
 
 </body>
 </html>
